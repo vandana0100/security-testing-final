@@ -1,0 +1,97 @@
+# Debugging Analysis
+
+## Scenario 1: Error Handling Middleware Debugging
+
+- **Breakpoint Location:** `src/app.ts`, line 53
+- **Objective:** Ensure that the global error-handling middleware (`errorHandler`) is properly catching and managing errors.
+
+### Debugger Observations
+
+- **Variable States:**
+  - `err.message` = `"This is an unknown error"`
+  - `req.url` = `"/test-unknown"`
+  - `req.method` = `"GET"`
+
+- **Call Stack:**
+  - `next(new Error("This is an unknown error"))` in `app.ts`
+  - Passed to `errorHandler` middleware
+  - Middleware processes the error but lacks a structured JSON response
+
+- **Behavior:**
+  - The error-handling middleware is correctly intercepting the error.
+  - The debugger paused execution at `app.use(errorHandler)`, confirming that the middleware is engaged.
+  - However, the response structure isn't clearly defined for the client.
+
+### Analysis
+
+- **Issue Identified:** While the error is caught, it is unclear whether a properly formatted JSON response is returned to the client.
+- **Fix:** Modify `errorHandler.ts` to ensure a JSON response structure like:
+  ```ts
+  res.status(500).json({ error: err.message });
+  ```
+
+---
+
+## Scenario 2: Validation Middleware Debugging
+
+- **Breakpoint Location:** `src/middleware/validationMiddleware.ts`, line 15
+- **Objective:** Ensure request body validation correctly detects missing or invalid fields before hitting the service layer.
+
+### Debugger Observations
+
+- **Variable States:**
+  - `req.body` = `{ department: "HR" }` (Missing `name`)
+  - `validationResult` = `false`
+
+- **Call Stack:**
+  - `validateEmployeeInput` in `validationMiddleware.ts`
+  - Called before `createEmployee` in `employeeController.ts`
+
+- **Behavior:**
+  - The request proceeds even when required fields are missing, suggesting a missing validation error response.
+
+### Analysis
+
+- The validation middleware should prevent invalid requests from reaching the service layer.
+- **Fix:** Return an appropriate **400 Bad Request** response when validation fails.
+- This debugging session confirmed middleware execution and revealed an issue with missing error handling.
+
+---
+
+## Scenario 3: Debugging Employee Controller and Firestore CRUD Operations
+
+- **Breakpoint Location:** `src/api/v1/controllers/employeeController.ts`, line 16
+- **Objective:** Ensure that the `getAllEmployees` function correctly fetches employee data from Firestore and handles errors properly.
+
+### Debugger Observations
+
+- **Variable States:**
+  - `employees` = `undefined` (expected an array of employee objects)
+  - `error` = `undefined` before the `try` block
+
+- **Call Stack:**
+  - `getAllEmployees` in `employeeController.ts`
+  - Calls `getAllEmployees` method from `employeeService.ts`
+  - Calls Firestore `getDocuments` function from `firestoreRepository.ts`
+
+- **Behavior:**
+  - The request reaches the controller but does not return employee data as expected.
+  - Execution pauses at `await employeeService.getAllEmployees();`, indicating a possible issue in Firestore retrieval.
+  - Firestore query might not be returning expected results or handling errors correctly.
+
+### Firestore CRUD Operations
+
+- **Firestore Function Involved:** `getDocuments(collectionName: string)`
+- **Expected Behavior:** Should retrieve all documents from the `employees` collection.
+- **Issue Identified:** Firestore query might be failing silently or returning an empty snapshot.
+
+### Fix
+
+- Verify that the collection exists and contains data.
+- Add explicit logging for `snapshot.docs.length` to confirm the retrieved document count.
+- Ensure `getDocuments` properly throws an error if Firestore operation fails.
+
+### Analysis and Fix
+
+- **Ensure Proper Error Handling:** Modify `catch(error)` to log Firestore retrieval errors.
+- **Return Proper Response:** Ensure `getAllEmployees` correctly maps Firestore documents to a response object.
