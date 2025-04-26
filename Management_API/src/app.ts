@@ -2,8 +2,6 @@ import dotenv from "dotenv";
 // Load environment variables BEFORE your internal imports!
 dotenv.config();
 import express, { Request, Response, NextFunction } from 'express';
-import helmet from "helmet";
-import cors from 'cors';
 import setupSwagger from "../config/swagger";
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
@@ -16,7 +14,7 @@ import { accessLogger } from "./api/v1/middleware/logger";
 
 const app = express();
 
-// Swagger configuration
+// Swagger configuration 
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -72,7 +70,7 @@ const corsOptions = {
 };
 
 // Use CORS middleware with the configuration
-app.use(cors(corsOptions));
+app.use(cors(corsOptions));  
 
 app.get('/test-unknown', (req, res, next) => {
   // Force an unknown error
