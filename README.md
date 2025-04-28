@@ -19,7 +19,7 @@ GitHub Actions for vulnerability testing, and the use of dedicated security test
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/security-testing-final.git
+   git clone https://github.com/vandana0100/security-testing-final.git
 
 ## Author
 
