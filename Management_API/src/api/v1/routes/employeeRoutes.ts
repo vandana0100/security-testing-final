@@ -147,6 +147,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
 /**
  * @swagger
  * /api/v1/employees/{id}:

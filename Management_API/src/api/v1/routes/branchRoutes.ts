@@ -151,3 +151,4 @@ router.put('/:id', validateRequest, updateBranch); // Update a branch by ID
 router.delete('/:id', deleteBranch); // Delete a branch by ID
 
 export default router;
+
