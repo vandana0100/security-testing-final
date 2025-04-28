@@ -69,3 +69,4 @@ export const deleteBranch = (req: Request, res: Response, next: NextFunction) =>
     next(error); // Pass the error to the next middleware
   }
 };
+

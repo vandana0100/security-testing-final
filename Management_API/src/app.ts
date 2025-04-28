@@ -87,6 +87,7 @@ app.get("/health", (req, res) => {
   res.send("Server is healthy");
 });
 
+
 // Root route
 app.get('/', (req: Request, res: Response): void => {
   res.send('Welcome to the Management API. Visit /api-docs for API documentation.');
